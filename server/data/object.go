@@ -13,7 +13,7 @@ import (
 )
 
 func getObjectColl() *mongo.Collection {
-	return GetDB().Collection("objects")
+	return getDB().Collection("objects")
 }
 
 func ObjectGetById(id string) (*models.Object, error) {

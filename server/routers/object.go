@@ -10,11 +10,7 @@ import (
 	"suraj.com/refine/models"
 )
 
-func errorResponse(w http.ResponseWriter, err error) {
-	http.Error(w, err.Error(), http.StatusInternalServerError)
-}
-
-func GetObjectRouter() *chi.Mux {
+func getObjectRouter() *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Route("/", func(r chi.Router) {
@@ -38,7 +34,7 @@ func getObject(w http.ResponseWriter, r *http.Request) {
 
 	res, err := data.ObjectGetById(id)
 	if err != nil {
-		errorResponse(w, err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -51,7 +47,7 @@ func deleteObject(w http.ResponseWriter, r *http.Request) {
 
 	res, err := data.ObjectDeleteById(id)
 	if err != nil {
-		errorResponse(w, err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	json.NewEncoder(w).Encode(res)
@@ -60,7 +56,7 @@ func deleteObject(w http.ResponseWriter, r *http.Request) {
 func getObjects(w http.ResponseWriter, r *http.Request) {
 	res, err := data.ObjectGetAll()
 	if err != nil {
-		errorResponse(w, err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -72,7 +68,7 @@ func deleteObjects(w http.ResponseWriter, r *http.Request) {
 
 	res, err := data.ObjectDeleteAll()
 	if err != nil {
-		errorResponse(w, err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	json.NewEncoder(w).Encode(res)
@@ -89,7 +85,7 @@ func createObject(w http.ResponseWriter, r *http.Request) {
 	res, err := data.ObjectCreate(&obj)
 
 	if err != nil {
-		errorResponse(w, err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	json.NewEncoder(w).Encode(&res)

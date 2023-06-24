@@ -39,6 +39,6 @@ func getClient() *mongo.Client {
 	return client
 }
 
-func GetDB() *mongo.Database {
+func getDB() *mongo.Database {
 	return getClient().Database("refine")
 }

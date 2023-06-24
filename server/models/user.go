@@ -1,6 +1,8 @@
 package models
 
 import (
+	"encoding/json"
+	"io"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -10,6 +12,7 @@ type User struct {
 	ID           primitive.ObjectID `json:"id" bson:"_id"`
 	CreatedAt    time.Time          `json:"createdAt" bson:"createdAt"`
 	UpdatedAt    time.Time          `json:"updatedAt" bson:"updatedAt"`
+	LastLogin    time.Time          `json:"lastLogin" bson:"lastLogin"`
 	DisplayName  string             `json:"displayName" bson:"displayName"`
 	UserName     string             `json:"userName" bson:"userName"`
 	Email        string             `json:"email" bson:"email"`
@@ -30,8 +33,13 @@ func NewUser(email string, hashedPass string, userName string, displayName strin
 		Password:     hashedPass,
 		CreatedAt:    time.Now(),
 		UpdatedAt:    time.Now(),
+		LastLogin:    time.Now(),
 		NumPosts:     0,
 		NumFollowers: 0,
 		NumFollowing: 0,
 	}
+}
+
+func (user *User) FromJSON(r *io.ReadCloser) error {
+	return json.NewDecoder(*r).Decode(user)
 }

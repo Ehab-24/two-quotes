@@ -16,7 +16,9 @@ func GetBaseRouter() *chi.Mux {
 		w.Write([]byte("Two Quotes"))
 	})
 
-	r.Mount("/objects", GetObjectRouter())
+	r.Mount("/objects", getObjectRouter())
+	r.Mount("/auth", getAuthRouter())
+	r.Mount("/user", getUserRouter())
 
 	return r
 }
