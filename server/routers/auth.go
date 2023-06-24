@@ -38,9 +38,19 @@ type BaseResponse struct {
 	IsAuthenticated bool `json:"isAuthenticated"`
 }
 
+type Credentials struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 type RegisterResponse struct {
 	Token      string             `json:"token"`
 	InsertedId primitive.ObjectID `json:"insertedId"`
+}
+
+type LoginResponse struct {
+	Token string      `json:"token"`
+	User  models.User `json:"user"`
 }
 
 type DeleteResponse struct {
@@ -90,7 +100,53 @@ func getCurrentUser(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(uid.Hex()))
 }
 
-func login(w http.ResponseWriter, r *http.Request) {}
+func login(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "application/json")
+	var credentials Credentials
+	if err := json.NewDecoder(r.Body).Decode(&credentials); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	user, err := data.UserFindByEmail(credentials.Email)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if user == nil {
+		http.Error(w, "Invalid email", http.StatusNotFound)
+		return
+	}
+
+	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(credentials.Password)); err != nil {
+		http.Error(w, "Invalid password", http.StatusUnauthorized)
+		return
+	}
+
+	// Set claims for JWT
+	expiry := time.Now().Add(12 * time.Hour)
+	claims := &Claims{
+		UserID: primitive.NewObjectID(),
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expiry.Unix(),
+		},
+	}
+
+	// Create a new JWT
+	tokenStr, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(jwtkey)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	user.Password = ""
+	response := &LoginResponse{
+		Token: tokenStr,
+		User:  *user,
+	}
+	json.NewEncoder(w).Encode(response)
+}
 
 func register(w http.ResponseWriter, r *http.Request) {
 
@@ -134,7 +190,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 	// Create a new JWT
 	tokenStr, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(jwtkey)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 

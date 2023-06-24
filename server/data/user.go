@@ -20,10 +20,13 @@ func UserFindById(id string) (*models.User, error) {
 	}
 
 	filter := bson.D{primitive.E{Key: "_id", Value: oid}}
-	var user *models.User
-	err = getUserColl().FindOne(context.Background(), filter).Decode(user)
+	var user models.User
+	err = getUserColl().FindOne(context.Background(), filter).Decode(&user)
 
-	return user, err
+	if err == mongo.ErrNoDocuments {
+		return nil, nil
+	}
+	return &user, err
 }
 
 func UserFindByEmail(email string) (*models.User, error) {
