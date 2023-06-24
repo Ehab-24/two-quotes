@@ -1,6 +1,8 @@
 package models
 
 import (
+	"encoding/json"
+	"io"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -29,4 +31,8 @@ type CommentsDoc struct {
 	ID       primitive.ObjectID `json:"id" bson:"_id"`
 	ObjectID primitive.ObjectID `json:"ObjectID" bson:"ObjectID"`
 	Comments []Comment          `json:"comments" bson:"comments"`
+}
+
+func (c *Comment) FromJSON(r *io.ReadCloser) error {
+	return json.NewDecoder(*r).Decode(&c)
 }

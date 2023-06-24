@@ -19,7 +19,7 @@ func getPostRouter() *chi.Mux {
 		r.Delete("/", deletePosts)
 	})
 
-	r.Route("/{id}", func(r chi.Router) {
+	r.Route("/{pid}", func(r chi.Router) {
 		r.Get("/", getPost)
 		r.Delete("/", deletePost)
 		// TODO: r.Put("/", updatePost)
@@ -31,7 +31,7 @@ func getPostRouter() *chi.Mux {
 
 func getPost(w http.ResponseWriter, r *http.Request) {
 
-	id := chi.URLParam(r, "id")
+	id := chi.URLParam(r, "pid")
 
 	res, err := data.PostFindById(id)
 	if err != nil {
@@ -44,7 +44,7 @@ func getPost(w http.ResponseWriter, r *http.Request) {
 
 func deletePost(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	id := chi.URLParam(r, "id")
+	id := chi.URLParam(r, "pid")
 
 	res, err := data.PostDeleteById(id)
 	if err != nil {

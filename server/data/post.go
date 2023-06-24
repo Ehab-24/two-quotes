@@ -59,6 +59,15 @@ func PostCreateOne(obj *models.Post) (*mongo.InsertOneResult, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// Create a placeholder for comments related to this post
+	// ! bug: What if Post is created but an error occurs while creating the placeholder?
+	commentsDoc := &models.CommentsDoc{}
+	_, err = getCommentsColl().InsertOne(context.Background(), commentsDoc)
+	if err != nil {
+		return nil, err
+	}
+
 	return res, nil
 }
 
