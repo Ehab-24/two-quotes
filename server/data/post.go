@@ -16,7 +16,7 @@ func getPostColl() *mongo.Collection {
 	return getDB().Collection("Posts")
 }
 
-func PostGetById(id string) (*models.Post, error) {
+func PostFindById(id string) (*models.Post, error) {
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func PostDeleteById(id string) (*mongo.DeleteResult, error) {
 	return res, err
 }
 
-func PostGetAll() (*[]models.Post, error) {
+func PostFindAll() (*[]models.Post, error) {
 
 	options := options.Find()
 	res, err := getPostColl().Find(context.TODO(), bson.D{{}}, options)
@@ -49,7 +49,7 @@ func PostGetAll() (*[]models.Post, error) {
 	return &[]models.Post{}, err
 }
 
-func PostCreate(obj *models.Post) (*mongo.InsertOneResult, error) {
+func PostCreateOne(obj *models.Post) (*mongo.InsertOneResult, error) {
 	obj.ID = primitive.NewObjectID()
 	// obj.UserId = nil
 	obj.CreatedAt = time.Now()

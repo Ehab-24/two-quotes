@@ -22,7 +22,8 @@ func getPostRouter() *chi.Mux {
 	r.Route("/{id}", func(r chi.Router) {
 		r.Get("/", getPost)
 		r.Delete("/", deletePost)
-		// r.Put("/", updatePost)
+		// TODO: r.Put("/", updatePost)
+		r.Mount("/comments", getCommentsByPostRouter())
 	})
 
 	return r
@@ -32,7 +33,7 @@ func getPost(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 
-	res, err := data.PostGetById(id)
+	res, err := data.PostFindById(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -54,7 +55,7 @@ func deletePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func getPosts(w http.ResponseWriter, r *http.Request) {
-	res, err := data.PostGetAll()
+	res, err := data.PostFindAll()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -82,7 +83,7 @@ func createPost(w http.ResponseWriter, r *http.Request) {
 
 	// TODO: validate `obj`
 
-	res, err := data.PostCreate(&obj)
+	res, err := data.PostCreateOne(&obj)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -19,6 +19,7 @@ func GetBaseRouter() *chi.Mux {
 	r.Mount("/Posts", getPostRouter())
 	r.Mount("/auth", getAuthRouter())
 	r.Mount("/user", getUserRouter())
+	r.Mount("/comments", getCommentsRouter())
 
 	return r
 }
