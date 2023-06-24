@@ -14,9 +14,10 @@ type Properties struct {
 	BgImage   string `json:"bgImage" bson:"bgImage"`
 }
 
-type Object struct {
+type Post struct {
 	ID         primitive.ObjectID `json:"id" bson:"_id"`
 	UserId     primitive.ObjectID `json:"userId" bson:"userId"`
+	GroupId    primitive.ObjectID `json:"groupId" bson:"groupId"`
 	Type       string             `json:"type" bson:"type"`
 	CreatedAt  time.Time          `json:"createdAt" bson:"createdAt"`
 	UpdatedAt  time.Time          `json:"updatedAt" bson:"updatedAt"`
@@ -26,6 +27,6 @@ type Object struct {
 	Content    string             `json:"content" bson:"content"`
 }
 
-func (obj *Object) FromJSON(r *io.ReadCloser) error {
+func (obj *Post) FromJSON(r *io.ReadCloser) error {
 	return json.NewDecoder(*r).Decode(obj)
 }
